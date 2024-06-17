@@ -56,15 +56,15 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Icon(Symbols.search),
-            Text('Arknights'),
+            Text('Kakao'),
             Icon(Symbols.menu),
           ],
         ),
       ),
       body: Stack(
         children: [
-          categorybar(),
           categoryPage(),
+          categorybar(),
         ],
       ),
     );
@@ -122,37 +122,28 @@ class _HomePageState extends State<HomePage> {
 
   Widget categoryPage() {
     final category = context.read<Dummy>().category;
-    return Column(
-      children: [
-        const Expanded(flex: 1, child: SizedBox()),
-        Expanded(
-          flex: 15,
-          child: LoopPageView.builder(
-            itemCount: category.length,
-            controller: _categoryPageController,
-            onPageChanged: (indexPage) {
-              _jumpToPage(_selectedCategory);
-            },
-            itemBuilder: (_, indexPage) {
-              if (indexPage == 0) return page(indexPage);
-              if (indexPage == 1) {
-                return page(indexPage);
-              } else {
-                return const Placeholder();
-              }
-            },
-          ),
-        ),
-      ],
+    return LoopPageView.builder(
+      itemCount: category.length,
+      controller: _categoryPageController,
+      onPageChanged: (indexPage) {
+        _jumpToPage(_selectedCategory);
+      },
+      itemBuilder: (_, indexPage) {
+        if (indexPage == 0) return page(indexPage);
+        if (indexPage == 1) {
+          return page(indexPage);
+        } else {
+          return const Placeholder();
+        }
+      },
     );
   }
 
   Widget buildEventWidget(String event) {
     Color bgColor;
     Widget child;
-    EdgeInsets padding = const EdgeInsets.symmetric(horizontal: 8, vertical: 2);
-    double containerHeight = 20.0; // Set a fixed height for all containers
-
+    EdgeInsets padding = const EdgeInsets.symmetric(horizontal: 8, vertical: 0);
+    double containerHeight = 24.0; // Set a fixed height for all containers
     switch (event) {
       case 'top1':
         bgColor = Colors.red;
@@ -161,13 +152,13 @@ class _HomePageState extends State<HomePage> {
           style: TextStyle(
             fontWeight: FontWeight.w700,
             color: Colors.white,
-            fontSize: 10,
+            fontSize: 14,
           ),
         );
         break;
       case 'ตั๋วฟรี':
         bgColor = Colors.yellow;
-        padding = const EdgeInsets.symmetric(horizontal: 4);
+        padding = const EdgeInsets.symmetric(horizontal: 6);
         child = const Icon(
           Symbols.schedule_rounded,
           color: Colors.black,
@@ -183,7 +174,7 @@ class _HomePageState extends State<HomePage> {
           style: TextStyle(
             fontWeight: FontWeight.w700,
             color: Colors.white,
-            fontSize: 10,
+            fontSize: 14,
           ),
         );
         break;
@@ -194,7 +185,7 @@ class _HomePageState extends State<HomePage> {
           style: const TextStyle(
             fontWeight: FontWeight.w700,
             color: Colors.white,
-            fontSize: 10,
+            fontSize: 14,
           ),
         );
         break;
@@ -205,7 +196,7 @@ class _HomePageState extends State<HomePage> {
           style: const TextStyle(
             fontWeight: FontWeight.w700,
             color: Colors.white,
-            fontSize: 10,
+            fontSize: 14,
           ),
         );
         break;
@@ -230,22 +221,18 @@ class _HomePageState extends State<HomePage> {
       child: Column(
         children: [
           Container(
-            height: MediaQuery.of(context).size.height / 2.15,
-            margin: const EdgeInsets.fromLTRB(8, 4, 8, 0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              color: ColorStyles.grey_800,
-            ),
+            height: MediaQuery.of(context).size.height / 1.85,
+            margin: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+            color: ColorStyles.grey_900,
             child: Column(
               children: [
-                const Expanded(flex: 1, child: SizedBox()),
+                const SizedBox(height: 48), // เปลี่ยนจาก Expanded เป็น SizedBox
                 Expanded(
-                  flex: 15,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 16),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(8),
                       color: ColorStyles.grey_700,
                     ),
                     child: Column(
@@ -297,77 +284,68 @@ class _HomePageState extends State<HomePage> {
             ),
             itemCount: category[index]['item'].length - 1,
             itemBuilder: (context, indexitem) {
-              return Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Container(
-                      alignment: Alignment.centerLeft,
-                      decoration: const BoxDecoration(
-                        color: ColorStyles.grey_200,
-                      ),
-                      child: Transform.scale(
-                        scale: 6,
-                        child: Image.network(
-                          'https://raw.githubusercontent.com/Aceship/Arknight-Images/main/ui/chara/bg.png',
-                          fit: BoxFit.cover,
-                        ),
-                      ),
+              return Container(
+                padding: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: ColorStyles.grey_800,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: category[index]['item'][indexitem + 1]
+                                  ['event'] !=
+                              null
+                          ? List.generate(
+                              category[index]['item'][indexitem + 1]['event']
+                                  .length,
+                              (indexList) {
+                                var eventItem = category[index]['item']
+                                    [indexitem + 1]['event'][indexList];
+                                return eventItem == null
+                                    ? const SizedBox() // หรือ widget ที่ต้องการแสดงแทน
+                                    : buildEventWidget(eventItem);
+                              },
+                            )
+                          : [], // ถ้า event เป็น null ให้สร้าง List ว่าง
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    Row(
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: List.generate(
-                            category[index]['item'][indexitem + 1]['event']
-                                .length,
-                            (indexList) {
-                              return buildEventWidget(category[index]['item']
-                                  [indexitem + 1]['event'][indexList]);
-                            },
-                          ),
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Center(
-                                child: Stack(
-                                  children: <Widget>[
-                                    Text(
-                                      textAlign: TextAlign.center,
-                                      '${category[index]['item'][indexitem + 1]['name']}',
-                                      style: TextStyle(
-                                        overflow: TextOverflow.clip,
-                                        fontSize: 20,
-                                        foreground: Paint()
-                                          ..style = PaintingStyle.stroke
-                                          ..strokeWidth = 6
-                                          ..color = Colors.black,
-                                      ),
-                                    ),
-                                    Text(
-                                      textAlign: TextAlign.center,
-                                      '${category[index]['item'][indexitem + 1]['name']}',
-                                      style: TextStyle(
-                                        overflow: TextOverflow.clip,
-                                        fontSize: 20,
-                                        color: Colors.grey[300],
-                                      ),
-                                    ),
-                                  ],
+                        Expanded(
+                          child: Center(
+                            child: Stack(
+                              children: <Widget>[
+                                Text(
+                                  textAlign: TextAlign.center,
+                                  '${category[index]['item'][indexitem + 1]['name']}',
+                                  style: TextStyle(
+                                    overflow: TextOverflow.clip,
+                                    fontSize: 20,
+                                    foreground: Paint()
+                                      ..style = PaintingStyle.stroke
+                                      ..strokeWidth = 6
+                                      ..color = Colors.black,
+                                  ),
                                 ),
-                              ),
+                                Text(
+                                  textAlign: TextAlign.center,
+                                  '${category[index]['item'][indexitem + 1]['name']}',
+                                  style: TextStyle(
+                                    overflow: TextOverflow.clip,
+                                    fontSize: 20,
+                                    color: Colors.grey[300],
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                ],
+                  ],
+                ),
               );
             },
           )
